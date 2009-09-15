@@ -18,37 +18,48 @@ use 5.010;
 
     has path   => ( is => 'ro', isa     => 'Str' );
     has sock_path => (
-        is => 'ro',
-        isa => 'Str',
+        is      => 'ro',
+        isa     => 'Str',
+        lazy    => 1,
         default => sub { File::Temp::tmpnam() },
     );
     has socket => ( is => 'ro', lazy => 1, handles => ['print'], default => sub {
         my $self = shift;
-        my $file = $self->sock_path;
-        my $pid = fork();
-        if ($pid > 0) {
-            sleep 1;
-            my $sock = IO::Socket::UNIX->new(
-                Peer => $file,
-            ) or die $!;
-            $self->pid($pid);
-            return $sock;
-        } else {
-            my $sock = IO::Socket::UNIX->new(
-                Local => $file,
-                Listen => 10,
-            ) or die $!;
-            open *STDIN, '>&', $sock;
-            exec $self->path or die;
-            die "should not reach here";
-        }
+        $self->child_pid(); # invoke child
+        sleep 1;
+        my $path = $self->sock_path;
+        my $sock = IO::Socket::UNIX->new(
+            Peer => $path,
+        ) or die $!;
+        return $sock;
     });
-    has pid => (is => 'rw', isa => 'Int');
+    has child_pid => (
+        is      => 'rw',
+        isa     => 'Int',
+        lazy    => 1,
+        default => sub {
+            my $self = shift;
+            my $path = $self->sock_path;   # generate common path before fork(2)
+            my $pid  = fork();
+            if ( $pid > 0 ) {              # parent
+                return $pid;
+            }
+            else {
+                my $sock = IO::Socket::UNIX->new(
+                    Local  => $path,
+                    Listen => 10,
+                ) or die $!;
+                open *STDIN, '>&', $sock;    # dup(2)
+                exec $self->path;
+                die "should not reach here: $!";
+            }
+        }
+    );
 
     sub DEMOLISH {
         my $self = shift;
-        if ($self->pid) {
-            kill 'TERM' => $self->pid;
+        if ($self->child_pid) {
+            kill 'TERM' => $self->child_pid;
             wait;
         }
         unlink $self->sock_path;
