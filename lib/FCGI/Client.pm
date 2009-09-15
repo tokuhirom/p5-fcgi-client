@@ -17,6 +17,7 @@ FCGI::Client -
 =head1 SYNOPSIS
 
     use FCGI::Client;
+    use FCGI::Client::Internal;
     use HTTP::Request;
 
     my $req = HTTP::Request->new('GET' => '/');
