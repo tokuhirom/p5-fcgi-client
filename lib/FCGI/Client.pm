@@ -5,7 +5,7 @@ package FCGI::Client;
 our $VERSION = '0.01';
 use autodie;
 use Carp;
-use 5.010;
+use 5.008001;
 
 1;
 __END__
