@@ -14,10 +14,10 @@ has keepalive => (
 );
 
 sub request {
-    my ($self, $request) = @_;
+    my ($self, $env, $content) = @_;
     local $SIG{PIPE} = sub { Carp::cluck("SIGPIPE") };
     my $sock = $self->sock();
-    $self->_send_request($request, $sock);
+    $self->_send_request($env, $content);
     return $self->_receive_response($sock);
 }
 
@@ -40,17 +40,15 @@ sub _receive_response {
     die 'should not reache here';
 }
 sub _send_request {
-    my ($self, $request, $sock) = @_;
+    my ($self, $env, $content) = @_;
     my $record = "FCGI::Client::RecordFactory";
     my $flags = 0;
+    my $sock = $self->sock();
     $sock->print($record->begin_request(1, FCGI_RESPONDER, $flags));
-    {
-        my $c = HTTP::Request::AsCGI->new($request); # XXX don't use HTTP::Request::AsCGI
-        $sock->print($record->params(1, %{$c->environment}));
-    }
+    $sock->print($record->params(1, %$env));
     $sock->print($record->params(1));
-    if ($request->content) {
-        $sock->print($record->stdin(1, $request->content));
+    if ($content) {
+        $sock->print($record->stdin(1, $content));
     }
     $sock->print($record->stdin(1));
 }

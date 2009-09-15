@@ -4,7 +4,6 @@ use FCGI::Client::Constant;
 use File::Temp ();
 use autodie;
 use HTTP::Request;
-use HTTP::Request::AsCGI;
 use IO::Socket::UNIX;
 use FCGI::Client::RecordFactory;
 use FCGI::Client::Record;
@@ -64,9 +63,9 @@ sub create_socket {
 }
 
 sub request {
-    my ($self, $request) = @_;
+    my ($self, $env, $content) = @_;
     my $con = FCGI::Client::Connection->new(sock => $self->create_socket);
-    $con->request($request);
+    return $con->request($env, $content);
 }
 
 __PACKAGE__->meta->make_immutable;

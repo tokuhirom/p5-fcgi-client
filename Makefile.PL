@@ -3,7 +3,6 @@ name 'FCGI-Client';
 all_from 'lib/FCGI/Client.pm';
 
 requires 'autodie';
-requires 'HTTP::Request::AsCGI';
 requires 'IO::Socket::UNIX';
 requires 'HTTP::Request';
 
