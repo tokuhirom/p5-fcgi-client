@@ -1,7 +1,7 @@
 use strict;
 use warnings;
-use FCGI::Client;
 use Test::More;
+use FCGI::Client::Internal;
 
 my $req = HTTP::Request->new(GET => '/');
 my $client = FCGI::Client::Internal->new(path => 't/fcgi/hello.fcgi');
