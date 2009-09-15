@@ -17,9 +17,14 @@ use 5.010;
     use File::Temp ();
 
     has path   => ( is => 'ro', isa     => 'Str' );
+    has sock_path => (
+        is => 'ro',
+        isa => 'Str',
+        default => sub { File::Temp::tmpnam() },
+    );
     has socket => ( is => 'ro', lazy => 1, handles => ['print'], default => sub {
         my $self = shift;
-        my $file = File::Temp::tmpnam();
+        my $file = $self->sock_path;
         my $pid = fork();
         if ($pid > 0) {
             sleep 1;
@@ -46,7 +51,7 @@ use 5.010;
             kill 'TERM' => $self->pid;
             wait;
         }
-        unlink $self->socket->peerpath if $self->socket->peerpath;
+        unlink $self->sock_path;
     }
 
     sub request {
