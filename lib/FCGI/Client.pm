@@ -23,19 +23,6 @@ use 5.010;
         lazy    => 1,
         default => sub { File::Temp::tmpnam() },
     );
-    has socket => (
-        is      => 'ro',
-        lazy    => 1,
-        handles => ['print'],
-        default => sub {
-            my $self = shift;
-            $self->child_pid();    # invoke child
-            sleep 1;
-            my $path = $self->sock_path;
-            my $sock = IO::Socket::UNIX->new( Peer => $path, ) or die $!;
-            return $sock;
-        }
-    );
     has child_pid => (
         is      => 'rw',
         isa     => 'Int',
@@ -71,9 +58,22 @@ use 5.010;
     sub request {
         my ($self, $request) = @_;
         local $SIG{PIPE} = sub { Carp::cluck("SIGPIPE") };
-        my $sock = $self->socket;
+        my $sock = $self->create_socket();
         $self->_send_request($request, $sock);
         return $self->_receive_response($sock);
+    }
+    sub create_socket {
+        my $self = shift;
+        $self->child_pid();    # invoke child
+
+        my $path = $self->sock_path;
+        my $retry = 30;
+        while ($retry-- >= 0) {
+            my $sock = IO::Socket::UNIX->new( Peer => $path, );
+            return $sock if $sock;
+            sleep 0.1;
+        }
+        die "cannot open socket $path: $!";
     }
     sub _receive_response {
         my ($self, $sock) = @_;
