@@ -34,7 +34,6 @@ use 5.010;
                 Listen => 10,
             ) or die $!;
             open *STDIN, '>&', $sock;
-            warn "running " . $self->path;
             exec $self->path or die;
             die "should not reach here";
         }
@@ -176,11 +175,20 @@ use 5.010;
     }
     sub params {
         my ($class, $request_id, %params)  = @_;
-        my $content = scalar(%params) ? "\013\002SERVER_PORT80" : ""; # TODO
+        my $content = '';
+        while (my ($k, $v) = each %params) {
+            my $klen = length($k);
+            my $vlen = length($v);
+            $content .= ($klen < 127) ? pack('C', $klen) : pack('N', $klen);
+            $content .= ($vlen < 127) ? pack('C', $vlen) : pack('N', $vlen);
+            $content .= $k;
+            $content .= $v;
+        }
         $class->generate(FCGI_PARAMS, $request_id, $content);
     }
     sub stdin {
         my ($class, $request_id, $content)  = @_;
+        $content ||= '';
         $class->generate(FCGI_STDIN, $request_id, $content);
     }
 }
