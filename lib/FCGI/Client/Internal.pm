@@ -6,7 +6,6 @@ use autodie;
 use HTTP::Request;
 use HTTP::Request::AsCGI;
 use IO::Socket::UNIX;
-use v5.10.0;
 use FCGI::Client::RecordFactory;
 use FCGI::Client::Record;
 
@@ -73,20 +72,16 @@ sub _receive_response {
     my ($self, $sock) = @_;
     my ($stdout, $stderr);
     while (my $res = FCGI::Client::Record->read($sock)) {
-        given ($res->type) {
-            when (FCGI_STDOUT) {
-                $stdout .= $res->content;
-            }
-            when (FCGI_STDERR) {
-                $stderr .= $res->content;
-            }
-            when (FCGI_END_REQUEST) {
-                $sock->close();
-                return ($stdout, $stderr);
-            }
-            default {
-                die "unknown response type: " . $res->type;
-            }
+        my $type = $res->type;
+        if ($type == FCGI_STDOUT) {
+            $stdout .= $res->content;
+        } elsif ($type == FCGI_STDERR) {
+            $stderr .= $res->content;
+        } elsif ($type == FCGI_END_REQUEST) {
+            $sock->close();
+            return ($stdout, $stderr);
+        } else {
+            die "unknown response type: " . $res->type;
         }
     }
     die 'should not reache here';
