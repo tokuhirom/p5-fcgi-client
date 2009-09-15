@@ -23,16 +23,19 @@ use 5.010;
         lazy    => 1,
         default => sub { File::Temp::tmpnam() },
     );
-    has socket => ( is => 'ro', lazy => 1, handles => ['print'], default => sub {
-        my $self = shift;
-        $self->child_pid(); # invoke child
-        sleep 1;
-        my $path = $self->sock_path;
-        my $sock = IO::Socket::UNIX->new(
-            Peer => $path,
-        ) or die $!;
-        return $sock;
-    });
+    has socket => (
+        is      => 'ro',
+        lazy    => 1,
+        handles => ['print'],
+        default => sub {
+            my $self = shift;
+            $self->child_pid();    # invoke child
+            sleep 1;
+            my $path = $self->sock_path;
+            my $sock = IO::Socket::UNIX->new( Peer => $path, ) or die $!;
+            return $sock;
+        }
+    );
     has child_pid => (
         is      => 'rw',
         isa     => 'Int',
@@ -68,13 +71,14 @@ use 5.010;
     sub request {
         my ($self, $request) = @_;
         local $SIG{PIPE} = sub { Carp::cluck("SIGPIPE") };
-        $self->_send_request($request);
-        return $self->_receive_response();
+        my $sock = $self->socket;
+        $self->_send_request($request, $sock);
+        return $self->_receive_response($sock);
     }
     sub _receive_response {
-        my $self = shift;
+        my ($self, $sock) = @_;
         my ($stdout, $stderr);
-        while (my $res = FCGI::Client::Record->read($self->socket)) {
+        while (my $res = FCGI::Client::Record->read($sock)) {
             given ($res->type) {
                 when (FCGI_STDOUT) {
                     $stdout .= $res->content;
@@ -83,6 +87,7 @@ use 5.010;
                     $stderr .= $res->content;
                 }
                 when (FCGI_END_REQUEST) {
+                    $sock->close();
                     return ($stdout, $stderr);
                 }
                 default {
@@ -93,19 +98,19 @@ use 5.010;
         die 'should not reache here';
     }
     sub _send_request {
-        my ($self, $request) = @_;
+        my ($self, $request, $sock) = @_;
         my $record = "FCGI::Client::RecordFactory";
         my $flags = 0;
-        $self->print($record->begin_request(1, FCGI_RESPONDER, $flags));
+        $sock->print($record->begin_request(1, FCGI_RESPONDER, $flags));
         {
             my $c = HTTP::Request::AsCGI->new($request); # XXX don't use HTTP::Request::AsCGI
-            $self->print($record->params(1, %{$c->environment}));
+            $sock->print($record->params(1, %{$c->environment}));
         }
-        $self->print($record->params(1));
+        $sock->print($record->params(1));
         if ($request->content) {
-            $self->print($record->stdin(1, $request->content));
+            $sock->print($record->stdin(1, $request->content));
         }
-        $self->print($record->stdin(1));
+        $sock->print($record->stdin(1));
     }
 }
 
