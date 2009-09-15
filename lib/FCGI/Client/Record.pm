@@ -1,5 +1,5 @@
 package FCGI::Client::Record;
-use Mouse;
+use Any::Moose;
 use FCGI::Client::Constant;
 has type       => ( is => 'ro', isa => 'Int' );
 has request_id => ( is => 'ro', isa => 'Int' );

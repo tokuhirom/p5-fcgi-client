@@ -1,5 +1,5 @@
 package FCGI::Client::Internal;
-use Mouse;
+use Any::Moose;
 use FCGI::Client::Constant;
 use File::Temp ();
 use autodie;
