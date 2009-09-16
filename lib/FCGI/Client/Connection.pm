@@ -77,7 +77,6 @@ sub _send_request {
 # returns 1 if socket is ready, undef on timeout
 sub wait_socket {
     my ( $self, $sock, $is_write, $wait_until ) = @_;
-    my $sock = $self->sock;
     do {
         my $vec = '';
         vec( $vec, $sock->fileno, 1 ) = 1;
