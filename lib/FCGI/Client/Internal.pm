@@ -52,7 +52,6 @@ sub create_socket {
     my $self = shift;
     $self->child_pid();    # invoke child
 
-        $::main::pid = $self->child_pid;
     my $path = $self->sock_path;
     my $retry = 30;
     while ($retry-- >= 0) {

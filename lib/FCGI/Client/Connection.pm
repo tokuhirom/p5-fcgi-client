@@ -4,6 +4,8 @@ use FCGI::Client::Constant;
 use Time::HiRes qw(time);
 use List::Util qw(max sum);
 use POSIX qw(EAGAIN);
+use FCGI::Client::Record;
+use FCGI::Client::RecordFactory;
 
 has sock => (
     is       => 'ro',
