@@ -11,17 +11,20 @@ sub read {
     my $HEADER_SIZE = 8;
     my $header = '';
     my $read;
-    while (length($header) != $HEADER_SIZE) {
-        $read += $sock->read($header, $HEADER_SIZE-length($header));
+    while (length($header) < $HEADER_SIZE) {
+        my $ret = $sock->read($header, $HEADER_SIZE-length($header));
+        if ($ret == 0) {
+            return; # eof
+        }
     }
     my $content_length = unpack('x4n', $header);
     my $content = '';
-    while (length($content) != $content_length) {
+    while (length($content) < $content_length) {
         $sock->read($content, $content_length-length($content));
     }
     my $padding_length = unpack('x6C', $header);
     my $padding = '';
-    while (length($padding) != $padding_length) {
+    while (length($padding) < $padding_length) {
         $sock->read($padding, $padding_length-length($padding));
     }
     FCGI::Client::Record->new(
@@ -32,3 +35,13 @@ sub read {
 }
 
 __PACKAGE__->meta->make_immutable;
+
+=head1 NAME
+
+FCGI::Client::Record - record object
+
+=head1 SYNOPSIS
+
+    my $record = FCGI::Client::Record->read($sock);
+    say $record->type;
+

@@ -57,7 +57,7 @@ sub create_socket {
     while ($retry-- >= 0) {
         my $sock = IO::Socket::UNIX->new( Peer => $path, );
         return $sock if $sock;
-        sleep 0.1;
+        sleep 0.3;
     }
     die "cannot open socket $path: $!";
 }

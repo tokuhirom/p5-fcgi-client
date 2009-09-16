@@ -13,12 +13,29 @@ has keepalive => (
     default => 0,
 );
 
+has timeout => (
+    is => 'ro',
+    isa => 'Int',
+    default => 10,
+);
+
 sub request {
     my ($self, $env, $content) = @_;
     local $SIG{PIPE} = sub { Carp::cluck("SIGPIPE") };
-    my $sock = $self->sock();
-    $self->_send_request($env, $content);
-    return $self->_receive_response($sock);
+    my $orig_alarm;
+    my @res;
+    eval {
+        $SIG{ALRM} = sub { Carp::confess('REQUESET_TIME_OUT') };
+        $orig_alarm = alarm($self->timeout);
+        my $sock = $self->sock();
+        $self->_send_request($env, $content);
+        @res = $self->_receive_response($sock);
+    };
+    if ($@) {
+        die $@;
+    } else {
+        return @res;
+    }
 }
 
 sub _receive_response {
@@ -37,20 +54,21 @@ sub _receive_response {
             die "unknown response type: " . $res->type;
         }
     }
-    die 'should not reache here';
+    die 'connection breaked from server process?';
 }
 sub _send_request {
     my ($self, $env, $content) = @_;
     my $record = "FCGI::Client::RecordFactory";
-    my $flags = 0;
+    my $reqid = int(rand(1000));
+    my $flags = $self->keepalive ? FCGI_KEEP_CONN : 0;
     my $sock = $self->sock();
-    $sock->print($record->begin_request(1, FCGI_RESPONDER, $flags));
-    $sock->print($record->params(1, %$env));
-    $sock->print($record->params(1));
+    $sock->print($record->begin_request($reqid, FCGI_RESPONDER, $flags));
+    $sock->print($record->params($reqid, %$env));
+    $sock->print($record->params($reqid));
     if ($content) {
-        $sock->print($record->stdin(1, $content));
+        $sock->print($record->stdin($reqid, $content));
     }
-    $sock->print($record->stdin(1));
+    $sock->print($record->stdin($reqid));
 }
 
 1;

@@ -8,6 +8,9 @@ sub import {
         # protocol version
         FCGI_VERSION_1         =>  1,
 
+        # Mask for flags component of FCGI_BeginRequestBody
+        FCGI_KEEP_CONN         =>  1,
+
         # request role
         FCGI_RESPONDER         =>  1,
         FCGI_AUTHORIZER        =>  2,
