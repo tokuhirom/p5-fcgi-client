@@ -10,7 +10,7 @@ sub read {
     my ($class, $sock) = @_;
     my $HEADER_SIZE = 8;
     my $header = '';
-    $sock->read_timeout(\$header, $HEADER_SIZE-length($header), length($header)) or return;
+    $sock->read_timeout(\$header, $HEADER_SIZE, 0) or return;
     my $content_length = unpack('x4n', $header);
     my $content = '';
     while (length($content) < $content_length) {
