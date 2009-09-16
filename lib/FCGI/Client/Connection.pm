@@ -106,6 +106,8 @@ sub read_timeout {
             return $ret;
         }
         elsif ( !( !defined($ret) && $! == EAGAIN ) ) {
+        use Carp; Carp::cluck($ret);
+        warn $!;
             last;
         }
     }
