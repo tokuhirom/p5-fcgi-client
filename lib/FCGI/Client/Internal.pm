@@ -30,7 +30,7 @@ has child_pid => (
         else {
             my $sock = IO::Socket::UNIX->new(
                 Local  => $path,
-                Listen => 10,
+                Listen => 30,
             ) or die $!;
             open *STDIN, '>&', $sock;    # dup(2)
             exec $self->path;
@@ -52,6 +52,7 @@ sub create_socket {
     my $self = shift;
     $self->child_pid();    # invoke child
 
+        $::main::pid = $self->child_pid;
     my $path = $self->sock_path;
     my $retry = 30;
     while ($retry-- >= 0) {
