@@ -1,6 +1,9 @@
 package FCGI::Client::Connection;
 use Any::Moose;
 use FCGI::Client::Constant;
+use Time::HiRes qw(time);
+use List::Util qw(max sum);
+use POSIX qw(EAGAIN);
 
 has sock => (
     is       => 'ro',
@@ -41,7 +44,7 @@ sub request {
 sub _receive_response {
     my ($self, $sock) = @_;
     my ($stdout, $stderr);
-    while (my $res = FCGI::Client::Record->read($sock)) {
+    while (my $res = FCGI::Client::Record->read($self)) {
         my $type = $res->type;
         if ($type == FCGI_STDOUT) {
             $stdout .= $res->content;
@@ -69,6 +72,45 @@ sub _send_request {
         $sock->print($record->stdin($reqid, $content));
     }
     $sock->print($record->stdin($reqid));
+}
+
+# returns 1 if socket is ready, undef on timeout
+sub wait_socket {
+    my ( $self, $sock, $is_write, $wait_until ) = @_;
+    my $sock = $self->sock;
+    do {
+        my $vec = '';
+        vec( $vec, $sock->fileno, 1 ) = 1;
+        if (
+            select(
+                $is_write ? undef : $vec,
+                $is_write ? $vec  : undef,
+                undef,
+                max( $wait_until - time, 0 )
+            ) > 0
+          )
+        {
+            return 1;
+        }
+    } while ( time < $wait_until );
+    return;
+}
+
+# returns (positive) number of bytes read, or undef if the socket is to be closed
+sub read_timeout {
+    my ( $self, $buf, $len, $off, ) = @_;
+    my $sock = $self->sock;
+    my $timeout = $self->timeout;
+    my $wait_until = time + $timeout;
+    while ( $self->wait_socket( $sock, undef, $wait_until ) ) {
+        if ( my $ret = $sock->sysread( $$buf, $len, $off ) ) {
+            return $ret;
+        }
+        elsif ( !( !defined($ret) && $! == EAGAIN ) ) {
+            last;
+        }
+    }
+    return;
 }
 
 1;

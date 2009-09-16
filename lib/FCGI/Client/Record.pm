@@ -10,22 +10,16 @@ sub read {
     my ($class, $sock) = @_;
     my $HEADER_SIZE = 8;
     my $header = '';
-    my $read;
-    while (length($header) < $HEADER_SIZE) {
-        my $ret = $sock->read($header, $HEADER_SIZE-length($header));
-        if ($ret == 0) {
-            return; # eof
-        }
-    }
+    $sock->read_timeout(\$header, $HEADER_SIZE-length($header), length($header)) or return;
     my $content_length = unpack('x4n', $header);
     my $content = '';
     while (length($content) < $content_length) {
-        $sock->read($content, $content_length-length($content));
+        $sock->sock->sysread($content, $content_length-length($content));
     }
     my $padding_length = unpack('x6C', $header);
     my $padding = '';
     while (length($padding) < $padding_length) {
-        $sock->read($padding, $padding_length-length($padding));
+        $sock->sock->sysread($padding, $padding_length-length($padding));
     }
     FCGI::Client::Record->new(
         type       => unpack('xC', $header),
