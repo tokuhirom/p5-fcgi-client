@@ -5,6 +5,10 @@ package FCGI::Client::Constant;
 
 sub import {
     my $const = {
+        # Number of bytes in a FCGI_Header.  Future versions of the protocol
+        # will not reduce this number.
+        FCGI_HEADER_LEN        =>  8,
+
         # protocol version
         FCGI_VERSION_1         =>  1,
 
@@ -43,3 +47,21 @@ sub import {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+FCGI::Client::Constant - constants for FCGI
+
+=head1 DESCRIPTION
+
+This module defines constants for FCGI protocol.
+
+If you want to know what's included in this module, see the source code.
+
+=head1 SEE ALSO
+
+L<FCGI::Client>
+
+=cut
+

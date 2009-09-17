@@ -65,10 +65,9 @@ sub _send_request {
 
 sub _read_record {
     my ($self) = @_;
-    my $HEADER_SIZE = &FCGI::Client::RecordHeader::SIZE;
     my $header_raw = '';
-    while (length($header_raw) != $HEADER_SIZE) {
-        $self->_read_timeout(\$header_raw, $HEADER_SIZE-length($header_raw), length($header_raw)) or return;
+    while (length($header_raw) != FCGI_HEADER_LEN) {
+        $self->_read_timeout(\$header_raw, FCGI_HEADER_LEN-length($header_raw), length($header_raw)) or return;
     }
     my $header = FCGI::Client::RecordHeader->new(raw => $header_raw);
     my $content_length = $header->content_length;

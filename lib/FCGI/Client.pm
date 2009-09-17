@@ -2,7 +2,7 @@ use warnings;
 use strict;
 
 package FCGI::Client;
-our $VERSION = '0.01';
+our $VERSION = '0.01_01';
 use Carp;
 use 5.008001;
 
@@ -44,7 +44,7 @@ Tokuhiro Matsuno E<lt>tokuhirom @*(#RJKLFHFSDLJF gmail.comE<gt>
 
 =head1 SEE ALSO
 
-L<FCGI>
+L<FCGI>, L<http://www.fastcgi.com/drupal/node/6?q=node/22>
 
 =head1 LICENSE
 

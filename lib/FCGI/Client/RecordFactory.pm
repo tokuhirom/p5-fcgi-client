@@ -8,16 +8,16 @@ sub create_request {
     my $factory = __PACKAGE__;
     my $flags = 0;
     return join('',
-        $factory->begin_request($reqid, FCGI_RESPONDER, $flags),
-        $factory->params($reqid, %$env),
-        $factory->params($reqid),
-        ($content ? $factory->stdin($reqid, $content) : ''),
-        $factory->stdin($reqid),
+        $factory->build_begin_request($reqid, FCGI_RESPONDER, $flags),
+        $factory->build_params($reqid, %$env),
+        $factory->build_params($reqid),
+        ($content ? $factory->build_stdin($reqid, $content) : ''),
+        $factory->build_stdin($reqid),
     );
 }
 
 # generate generic record
-sub generate {
+sub build_base {
     my ($class, $type, $request_id, $content) = @_;
     #  0 unsigned char version;
     #  1 unsigned char type;
@@ -45,7 +45,7 @@ sub generate {
 }
 
 # generate FCGI_BEGIN_REQUEST record
-sub begin_request {
+sub build_begin_request {
     my ($class, $request_id, $role, $flags) = @_;
     # typedef struct {
     #     unsigned char roleB1;
@@ -59,11 +59,11 @@ sub begin_request {
         $flags,
         0,0,0,0,0
     );
-    $class->generate(FCGI_BEGIN_REQUEST, $request_id, $content);
+    $class->build_base(FCGI_BEGIN_REQUEST, $request_id, $content);
 }
 
 # generate FCGI_PARAMS record
-sub params {
+sub build_params {
     my ($class, $request_id, %params)  = @_;
     my $content = '';
     while (my ($k, $v) = each %params) {
@@ -74,14 +74,54 @@ sub params {
         $content .= $k;
         $content .= $v;
     }
-    $class->generate(FCGI_PARAMS, $request_id, $content);
+    $class->build_base(FCGI_PARAMS, $request_id, $content);
 }
 
 # generate FCGI_STDIN record
-sub stdin {
+sub build_stdin {
     my ($class, $request_id, $content)  = @_;
     $content ||= '';
-    $class->generate(FCGI_STDIN, $request_id, $content);
+    $class->build_base(FCGI_STDIN, $request_id, $content);
 }
 
 1;
+__END__
+
+=head1 NAME
+
+FCGI::Client::RecordFactory - FCGI record factory
+
+=head1 HIGH LEVEL API METHODS
+
+=over 4
+
+=item FCGI::Client::RecordFactory->create_request($reqid, $env, $content);
+
+This method creates set of request records.$env is environment variables same as CGI.
+$content is request body.This method returns string of request records.You can send it to
+socket.
+
+=back
+
+=head1 LOW LEVEL API METHODS
+
+=over 4
+
+=item FCGI::Client::RecordFactory->build_begin_request($reqid, FCGI_RESPONDER, $flags);
+
+build FCGI_BEGIN_REQUEST record.
+
+=item FCGI::Client::RecordFactory->build_params($reqid, %$env)
+
+build FCGI_PARAMS record.
+
+=item FCGI::Client::RecordFactory->build_stdin($reqid, $content);
+
+build FCGI_STDIN record.
+
+=back
+
+=head1 SEE ALSO
+
+L<FCGI::Client>
+

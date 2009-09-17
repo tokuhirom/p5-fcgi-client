@@ -1,4 +1,6 @@
 Revision history for Perl extension FCGI::Client
 
-0.01    Tue Sep 15 11:58:41 2009
-        - original version
+0.01_01
+
+    - shipped first dev release
+
