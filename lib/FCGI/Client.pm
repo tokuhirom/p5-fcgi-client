@@ -12,34 +12,36 @@ __END__
 
 =head1 NAME
 
-FCGI::Client -
+FCGI::Client - client library for fastcgi protocol
 
 =head1 SYNOPSIS
 
     use FCGI::Client;
-    use FCGI::Client::Internal;
-    use HTTP::Request;
 
-    my $req = HTTP::Request->new('GET' => '/');
-
-    my $fcgi = FCGI::Client::Internal->new(
-        path => '/path/to/your.fcgi',
+    my $sock = IO::Socket::INET->new(
+        PeerAddr => '127.0.0.1',
+        PeerPort => $port,
+    ) or die $!;
+    my $client = FCGI::Client::Connection->new( sock => $sock );
+    my ( $stdout, $stderr ) = $client->request(
+        +{
+            REQUEST_METHOD => 'GET',
+            QUERY_STRING   => 'foo=bar',
+        },
+        ''
     );
-    my $res = $fcgi->request($req);
 
 =head1 DESCRIPTION
 
-FCGI::Client is
-
-=head1 TODO
-
-    support external server
+FCGI::Client is client library for fastcgi protocol.
 
 =head1 AUTHOR
 
 Tokuhiro Matsuno E<lt>tokuhirom @*(#RJKLFHFSDLJF gmail.comE<gt>
 
 =head1 SEE ALSO
+
+L<FCGI>
 
 =head1 LICENSE
 
