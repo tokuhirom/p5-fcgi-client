@@ -26,7 +26,6 @@ has timeout => (
 
 sub request {
     my ($self, $env, $content) = @_;
-    warn 'send request';
     local $SIG{PIPE} = sub { Carp::cluck("SIGPIPE") };
     my $orig_alarm;
     my @res;
@@ -109,10 +108,6 @@ sub read_timeout {
             return $ret;
         }
         elsif ( !( !defined($ret) && $! == EAGAIN ) ) {
-        warn $::main::pid;
-        wait;
-        use Carp; Carp::cluck($ret);
-        warn $!;
             last;
         }
     }
