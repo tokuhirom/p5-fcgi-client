@@ -12,12 +12,6 @@ has sock => (
     required => 1,
 );
 
-has keepalive => (
-    is => 'ro',
-    isa => 'Int',
-    default => 0,
-);
-
 has timeout => (
     is => 'ro',
     isa => 'Int',
@@ -53,7 +47,7 @@ sub _receive_response {
         } elsif ($type == FCGI_STDERR) {
             $stderr .= $res->content;
         } elsif ($type == FCGI_END_REQUEST) {
-            $sock->close() unless $self->keepalive;
+            $sock->close();
             return ($stdout, $stderr);
         } else {
             die "unknown response type: " . $res->type;
@@ -65,7 +59,7 @@ sub _send_request {
     my ($self, $env, $content) = @_;
     my $record = "FCGI::Client::RecordFactory";
     my $reqid = int(rand(1000));
-    my $flags = $self->keepalive ? FCGI_KEEP_CONN : 0;
+    my $flags = 0;
     my $sock = $self->sock();
     $sock->print($record->begin_request($reqid, FCGI_RESPONDER, $flags));
     $sock->print($record->params($reqid, %$env));
@@ -115,3 +109,17 @@ sub read_timeout {
 }
 
 1;
+__END__
+
+=head1 FAQ
+
+=over 4
+
+=item Why don't support FCGI_KEEP_CONN?
+
+FCGI_KEEP_CONN is not used by lighttpd's mod_fastcgi.c, and mod_fast_cgi for apache.
+And, FCGI.xs doesn't support it.
+
+I seems FCGI_KEEP_CONN is not used in real world.
+
+=back
