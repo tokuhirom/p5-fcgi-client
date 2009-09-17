@@ -6,8 +6,10 @@ requires 'autodie';
 requires 'IO::Socket::UNIX';
 requires 'HTTP::Request';
 
+author_requires 'FCGI';
+
 tests 't/*.t';
-author_tests 'xt';
+recursive_author_tests 'xt';
 
 build_requires 'Test::More';
 use_test_base;
