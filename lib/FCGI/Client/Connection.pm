@@ -24,17 +24,18 @@ sub request {
     local $SIG{PIPE} = "IGNORE";
     my $orig_alarm;
     my @res;
-    eval {
+    try {
         $SIG{ALRM} = sub { Carp::confess('REQUESET_TIME_OUT') };
         $orig_alarm = alarm($self->timeout);
         $self->_send_request($env, $content);
         @res = $self->_receive_response($self->sock);
+    } catch {
+        if ($@) {
+            die $@;
+        } else {
+            return @res;
+        }
     };
-    if ($@) {
-        die $@;
-    } else {
-        return @res;
-    }
 }
 
 sub _receive_response {
