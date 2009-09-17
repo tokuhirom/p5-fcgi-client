@@ -8,6 +8,7 @@ use IO::Socket::UNIX;
 use FCGI::Client::RecordFactory;
 use FCGI::Client::Record;
 use FCGI::Client::Connection;
+use Time::HiRes 'sleep';
 
 has path   => ( is => 'ro', isa     => 'Str' );
 has sock_path => (
