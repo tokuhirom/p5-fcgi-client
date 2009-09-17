@@ -1,4 +1,4 @@
-package FCGI::Client::Internal;
+package t::Internal;
 use Any::Moose;
 use FCGI::Client::Constant;
 use File::Temp ();
