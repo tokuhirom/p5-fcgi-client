@@ -57,10 +57,10 @@ sub _receive_response {
 }
 sub _send_request {
     my ($self, $env, $content) = @_;
-    my $factory = "FCGI::Client::factoryFactory";
+    my $factory = "FCGI::Client::RecordFactory";
     my $sock = $self->sock();
+    my $reqid = int(rand(1000));
     {
-        my $reqid = int(rand(1000));
         my $flags = 0;
         $sock->print($factory->begin_request($reqid, FCGI_RESPONDER, $flags));
     }
