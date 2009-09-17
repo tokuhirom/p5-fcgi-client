@@ -2,7 +2,7 @@ package FCGI::Client::Connection;
 use Any::Moose;
 use FCGI::Client::Constant;
 use Time::HiRes qw(time);
-use List::Util qw(max sum);
+use List::Util qw(max);
 use POSIX qw(EAGAIN);
 use FCGI::Client::Record;
 use FCGI::Client::RecordFactory;
