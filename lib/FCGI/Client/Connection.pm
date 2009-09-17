@@ -20,7 +20,7 @@ has timeout => (
 
 sub request {
     my ($self, $env, $content) = @_;
-    local $SIG{PIPE} = sub { Carp::cluck("SIGPIPE") };
+    local $SIG{PIPE} = "IGNORE";
     my $orig_alarm;
     my @res;
     eval {
