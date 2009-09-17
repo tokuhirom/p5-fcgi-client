@@ -16,6 +16,12 @@ sub import {
         FCGI_AUTHORIZER        =>  2,
         FCGI_FILTER            =>  3,
 
+        # Values for protocolStatus component of FCGI_EndRequestBody
+        FCGI_REQUEST_COMPLETE  =>  0,
+        FCGI_CANT_MPX_CONN     =>  1,
+        FCGI_OVERLOADED        =>  2,
+        FCGI_UNKNOWN_ROLE      =>  3,
+
         # packet type
         FCGI_BEGIN_REQUEST     =>  1,
         FCGI_ABORT_REQUEST     =>  2,

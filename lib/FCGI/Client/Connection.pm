@@ -48,8 +48,9 @@ sub _receive_response {
         } elsif ($type == FCGI_STDERR) {
             $stderr .= $res->content;
         } elsif ($type == FCGI_END_REQUEST) {
+            my $appstatus = unpack('N', $res->content);
             $sock->close();
-            return ($stdout, $stderr);
+            return ($stdout, $stderr, $appstatus);
         } else {
             die "unknown response type: " . $res->type;
         }
@@ -130,6 +131,47 @@ sub _read_timeout {
 
 1;
 __END__
+
+=head1 NAME
+
+FCGI::Client::Connection - connection to FastCGI server
+
+=head1 DESCRIPTION
+
+This module handles connection to FastCGI server.
+
+=head1 ATTRIBUTES
+
+=over 4
+
+=item sock
+
+the socket object.
+
+=item timeout
+
+read only integer value, default is 10seconds.
+
+=back
+
+=head1 METHODS
+
+=over 4
+
+=item my ($stdout, $stderr, $appstatus) = $self->request($env, $content)
+
+$env is environment hash, same as CGI.$content is request body string.
+This method returns $stdout and $stderr strings.When error got, return undef.
+$appstatus is the status code of FastCGI server, this is one of the following code.
+
+    #define FCGI_REQUEST_COMPLETE 0
+    #define FCGI_CANT_MPX_CONN    1
+    #define FCGI_OVERLOADED       2
+    #define FCGI_UNKNOWN_ROLE     3
+
+These constants defined at L<FCGI::Client::Constat>.
+
+=back
 
 =head1 FAQ
 
