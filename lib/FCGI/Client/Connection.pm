@@ -57,17 +57,19 @@ sub _receive_response {
 }
 sub _send_request {
     my ($self, $env, $content) = @_;
-    my $record = "FCGI::Client::RecordFactory";
-    my $reqid = int(rand(1000));
-    my $flags = 0;
+    my $factory = "FCGI::Client::factoryFactory";
     my $sock = $self->sock();
-    $sock->print($record->begin_request($reqid, FCGI_RESPONDER, $flags));
-    $sock->print($record->params($reqid, %$env));
-    $sock->print($record->params($reqid));
-    if ($content) {
-        $sock->print($record->stdin($reqid, $content));
+    {
+        my $reqid = int(rand(1000));
+        my $flags = 0;
+        $sock->print($factory->begin_request($reqid, FCGI_RESPONDER, $flags));
     }
-    $sock->print($record->stdin($reqid));
+    $sock->print($factory->params($reqid, %$env));
+    $sock->print($factory->params($reqid));
+    if ($content) {
+        $sock->print($factory->stdin($reqid, $content));
+    }
+    $sock->print($factory->stdin($reqid));
 }
 
 # returns 1 if socket is ready, undef on timeout
