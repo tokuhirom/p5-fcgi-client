@@ -3,6 +3,19 @@ use strict;
 use warnings;
 use FCGI::Client::Constant;
 
+sub create_request {
+    my ($self, $reqid, $env, $content) = @_;
+    my $factory = __PACKAGE__;
+    my $flags = 0;
+    return join('',
+        $factory->begin_request($reqid, FCGI_RESPONDER, $flags),
+        $factory->params($reqid, %$env),
+        $factory->params($reqid),
+        ($content ? $factory->stdin($reqid, $content) : ''),
+        $factory->stdin($reqid),
+    );
+}
+
 # generate generic record
 sub generate {
     my ($class, $type, $request_id, $content) = @_;

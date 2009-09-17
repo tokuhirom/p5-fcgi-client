@@ -40,7 +40,7 @@ sub request {
 sub _receive_response {
     my ($self, $sock) = @_;
     my ($stdout, $stderr);
-    while (my $res = FCGI::Client::Record->read($self)) {
+    while (my $res = $self->_read_record($self)) {
         my $type = $res->type;
         if ($type == FCGI_STDOUT) {
             $stdout .= $res->content;
@@ -58,23 +58,39 @@ sub _receive_response {
 sub _send_request {
     my ($self, $env, $content) = @_;
     my $reqid = 1;
-    $self->sock->print($self->create_request($reqid, $env, $content));
+    $self->sock->print(FCGI::Client::RecordFactory->create_request($reqid, $env, $content));
 }
-sub create_request {
-    my ($self, $reqid, $env, $content) = @_;
-    my $factory = "FCGI::Client::RecordFactory";
-    my $flags = 0;
-    return join('',
-        $factory->begin_request($reqid, FCGI_RESPONDER, $flags),
-        $factory->params($reqid, %$env),
-        $factory->params($reqid),
-        ($content ? $factory->stdin($reqid, $content) : ''),
-        $factory->stdin($reqid),
+
+sub _read_record {
+    my ($self) = @_;
+    my $HEADER_SIZE = &FCGI::Client::RecordHeader::SIZE;
+    my $header_raw = '';
+    while (length($header_raw) != $HEADER_SIZE) {
+        $self->_read_timeout(\$header_raw, $HEADER_SIZE-length($header_raw), length($header_raw)) or return;
+    }
+    my $header = FCGI::Client::RecordHeader->new(raw => $header_raw);
+    my $content_length = $header->content_length;
+    my $content = '';
+    if ($content_length != 0) {
+        while (length($content) != $content_length) {
+            $self->_read_timeout(\$content, $content_length-length($content), length($content)) or return;
+        }
+    }
+    my $padding_length = $header->padding_length;
+    my $padding = '';
+    if ($padding_length != 0) {
+        while (length($padding) != $padding_length) {
+            $self->_read_timeout(\$padding, $padding_length, 0) or return;
+        }
+    }
+    return FCGI::Client::Record->new(
+        header     => $header,
+        content    => $content,
     );
 }
 
 # returns 1 if socket is ready, undef on timeout
-sub wait_socket {
+sub _wait_socket {
     my ( $self, $sock, $is_write, $wait_until ) = @_;
     do {
         my $vec = '';
@@ -95,12 +111,12 @@ sub wait_socket {
 }
 
 # returns (positive) number of bytes read, or undef if the socket is to be closed
-sub read_timeout {
+sub _read_timeout {
     my ( $self, $buf, $len, $off, ) = @_;
     my $sock = $self->sock;
     my $timeout = $self->timeout;
     my $wait_until = time + $timeout;
-    while ( $self->wait_socket( $sock, undef, $wait_until ) ) {
+    while ( $self->_wait_socket( $sock, undef, $wait_until ) ) {
         if ( my $ret = $sock->sysread( $$buf, $len, $off ) ) {
             return $ret;
         }
