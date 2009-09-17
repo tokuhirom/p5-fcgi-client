@@ -5,6 +5,7 @@ all_from 'lib/FCGI/Client.pm';
 requires 'autodie';
 requires 'IO::Socket::UNIX';
 requires 'HTTP::Request';
+requires 'Try::Tiny';
 
 author_requires 'FCGI';
 
