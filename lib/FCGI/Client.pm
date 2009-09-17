@@ -3,9 +3,12 @@ use strict;
 
 package FCGI::Client;
 our $VERSION = '0.01';
-use autodie;
 use Carp;
 use 5.008001;
+
+use FCGI::Client::Connection;
+use FCGI::Client::Record;
+use FCGI::Client::RecordFactory;
 
 1;
 __END__
