@@ -1,5 +1,10 @@
 Revision history for Perl extension FCGI::Client
 
+0.01_02
+
+    - fixed alarm bug
+    - fixed deps
+
 0.01_01
 
     - shipped first dev release

@@ -30,6 +30,7 @@ sub request {
         $self->_send_request($env, $content);
         @res = $self->_receive_response($self->sock);
     } catch {
+        alarm($orig_alarm);
         if ($@) {
             die $@;
         } else {
