@@ -25,7 +25,7 @@ sub request {
     my $orig_alarm;
     my @res;
     try {
-        $SIG{ALRM} = sub { Carp::confess('REQUESET_TIME_OUT') };
+        local $SIG{ALRM} = sub { Carp::confess('REQUESET_TIME_OUT') };
         $orig_alarm = alarm($self->timeout);
         $self->_send_request($env, $content);
         @res = $self->_receive_response($self->sock);
