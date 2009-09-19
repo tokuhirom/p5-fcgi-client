@@ -22,15 +22,15 @@ has timeout => (
 sub request {
     my ($self, $env, $content) = @_;
     local $SIG{PIPE} = "IGNORE";
-    my $orig_alarm;
     my @res;
     try {
         local $SIG{ALRM} = sub { Carp::confess('REQUESET_TIME_OUT') };
-        $orig_alarm = alarm($self->timeout);
+        my $orig_alarm = alarm($self->timeout) || 0;
         $self->_send_request($env, $content);
         @res = $self->_receive_response($self->sock);
-    } catch {
         alarm($orig_alarm);
+        @res;
+    } catch {
         if ($@) {
             die $@;
         } else {
