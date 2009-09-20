@@ -1,10 +1,12 @@
 package FCGI::Client::RecordFactory;
 use strict;
 use warnings;
+use Carp ();
 use FCGI::Client::Constant;
 
 sub create_request {
     my ($self, $reqid, $env, $content) = @_;
+    Carp::croak("env should be hashref") if ref($env) ne 'HASH';
     my $factory = __PACKAGE__;
     my $flags = 0;
     return join('',
