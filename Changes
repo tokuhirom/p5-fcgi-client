@@ -1,5 +1,10 @@
 Revision history for Perl extension FCGI::Client
 
+0.02
+
+    - better error handler
+    - fixed alarm handler, and localize it
+
 0.01_02
 
     - fixed alarm bug
