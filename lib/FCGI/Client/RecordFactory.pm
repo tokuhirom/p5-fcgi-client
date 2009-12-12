@@ -69,8 +69,18 @@ sub build_params {
     while (my ($k, $v) = each %params) {
         my $klen = length($k);
         my $vlen = length($v);
-        $content .= ($klen < 127) ? pack('C', $klen) : pack('N', $klen);
-        $content .= ($vlen < 127) ? pack('C', $vlen) : pack('N', $vlen);
+        if ($klen < 127) {
+            $content .= pack('C', $klen);
+        } else {
+            $klen = $klen | 0x80000000;
+            $content .= pack('N', $klen);
+        }
+        if ($vlen < 127) {
+            $content .= pack('C', $vlen);
+        } else {
+            $vlen = $vlen | 0x80000000;
+            $content .= pack('N', $vlen);
+        }
         $content .= $k;
         $content .= $v;
     }
