@@ -2,7 +2,7 @@ use warnings;
 use strict;
 
 package FCGI::Client;
-our $VERSION = '0.01_02';
+our $VERSION = '0.03';
 use Carp;
 use 5.008001;
 
@@ -41,6 +41,10 @@ FCGI::Client is client library for fastcgi protocol.
 =head1 AUTHOR
 
 Tokuhiro Matsuno E<lt>tokuhirom @*(#RJKLFHFSDLJF gmail.comE<gt>
+
+=head1 THANKS TO
+
+peterkeen
 
 =head1 SEE ALSO
 
