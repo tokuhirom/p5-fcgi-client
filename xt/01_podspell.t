@@ -14,3 +14,4 @@ xs
 fastcgi
 CGI
 API
+FAQ
