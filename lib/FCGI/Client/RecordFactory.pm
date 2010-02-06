@@ -12,7 +12,7 @@ sub create_request {
         $factory->build_params($reqid, %$env),
         $factory->build_params($reqid),
         ($content ? $factory->build_stdin($reqid, $content) : ''),
-        $factory->build_stdin($reqid),
+        $factory->build_stdin($reqid, ''),
     );
 }
 
@@ -32,16 +32,26 @@ sub build_base {
     #
     # n => An unsigned short (16−bit) in "network" (big−endian) order.
     # C => An unsigned char (octet) value.
-    my $buf = pack('CCnnCC',
-        FCGI_VERSION_1,
-        $type,
-        $request_id,
-        length($content),
-        0,
-        0,
-    );
-    $buf .= $content;
-    return $buf;
+    my $build_record = sub {
+        my $in = $_[0];
+        pack('CCnnCC',
+            FCGI_VERSION_1,
+            $type,
+            $request_id,
+            length($in),
+            0,
+            0,
+        ) . $in
+    };
+    if (length($content) > 0) {
+        my $buf;
+        while ($content =~ s/^(.{1,32766})//g) {
+            $buf .= $build_record->($1);
+        }
+        return $buf;
+    } else {
+        return $build_record->('');
+    }
 }
 
 # generate FCGI_BEGIN_REQUEST record
