@@ -2,7 +2,7 @@ use warnings;
 use strict;
 
 package FCGI::Client;
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 use Carp;
 use 5.008001;
 
