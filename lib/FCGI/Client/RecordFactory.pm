@@ -45,7 +45,7 @@ sub build_base {
     };
     if (length($content) > 0) {
         my $buf;
-        while ($content =~ s/^(.{1,32766})//g) {
+        while ($content =~ s/^(.{1,32766})//sg) {
             $buf .= $build_record->($1);
         }
         return $buf;
