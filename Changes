@@ -1,5 +1,12 @@
 Revision history for Perl extension FCGI::Client
 
+0.05
+
+    - remove unused dependency to autodie, Try::Tiny.
+    - fixed bad error handler in FCGI/Client/Connection.pm.
+      https://rt.cpan.org/Ticket/Display.html?id=57374
+      (reported by mmcleric)
+
 0.04
 
     - fixed bug: support long input
