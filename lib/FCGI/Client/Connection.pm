@@ -6,7 +6,6 @@ use List::Util qw(max);
 use POSIX qw(EAGAIN);
 use FCGI::Client::Record;
 use FCGI::Client::RecordFactory;
-use Try::Tiny;
 
 has sock => (
     is       => 'ro',
@@ -16,27 +15,20 @@ has sock => (
 has timeout => (
     is => 'ro',
     isa => 'Int',
-    default => 10,
+    default => 1,
 );
 
 sub request {
     my ($self, $env, $content) = @_;
     local $SIG{PIPE} = "IGNORE";
-    my @res;
-    try {
-        local $SIG{ALRM} = sub { Carp::confess('REQUESET_TIME_OUT') };
+    {
+        local $SIG{ALRM} = sub { Carp::confess('REQUEST_TIME_OUT') };
         my $orig_alarm = alarm($self->timeout) || 0;
         $self->_send_request($env, $content);
-        @res = $self->_receive_response($self->sock);
+        my @res = $self->_receive_response($self->sock);
         alarm($orig_alarm);
-        @res;
-    } catch {
-        if ($@) {
-            die $@;
-        } else {
-            return @res;
-        }
-    };
+        return @res;
+    }
 }
 
 sub _receive_response {
