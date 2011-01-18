@@ -1,5 +1,10 @@
 Revision history for Perl extension FCGI::Client
 
+0.06
+
+    - fixed large packet issue
+      (trunaev++)
+
 0.05
 
     - remove unused dependency to autodie, Try::Tiny.
