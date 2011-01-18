@@ -64,8 +64,8 @@ sub create_socket {
 }
 
 sub request {
-    my ($self, $env, $content) = @_;
-    my $con = FCGI::Client::Connection->new(sock => $self->create_socket);
+    my ($self, $env, $content, $timeout) = @_;
+    my $con = FCGI::Client::Connection->new(sock => $self->create_socket, timeout => $timeout || 1);
     return $con->request($env, $content);
 }
 
