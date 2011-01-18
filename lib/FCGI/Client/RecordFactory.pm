@@ -44,10 +44,12 @@ sub build_base {
         ) . $in
     };
     if (length($content) > 0) {
-        my $buf;
-        while ($content =~ s/^(.{1,32766})//sg) {
-            $buf .= $build_record->($1);
+        my $buf = '';
+        while( length( $content ) > 65535 ) {
+            $buf .= $build_record->( substr( $content, 0, 65535 ) );
+            $content = substr( $content, 65535 );
         }
+        $buf .= $build_record->($content);
         return $buf;
     } else {
         return $build_record->('');
