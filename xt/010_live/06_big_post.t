@@ -17,5 +17,6 @@ my ( $stdout, $stderr ) = $client->request(
 is $stdout, "Content−Type: application/octet-stream\r\nContent-Length: @{[ length($chunk) ]}\r\n\r\n$chunk";
 my ($x1, $x2) = $stderr =~ /len: (\d+), (\d+)\n/;
 is $x1, $x2;
+is $x1, length($chunk);
 
 done_testing;
