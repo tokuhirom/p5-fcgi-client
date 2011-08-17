@@ -1,5 +1,9 @@
 Revision history for Perl extension FCGI::Client
 
+0.07
+
+    - make FCGI::Client::Connection->timeout as writable(Jonas)
+
 0.06
 
     - fixed large packet issue
