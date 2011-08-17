@@ -13,7 +13,7 @@ has sock => (
 );
 
 has timeout => (
-    is => 'ro',
+    is => 'rw',
     isa => 'Int',
     default => 1,
 );
