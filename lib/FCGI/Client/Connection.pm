@@ -15,7 +15,7 @@ has sock => (
 has timeout => (
     is => 'rw',
     isa => 'Int',
-    default => 1,
+    default => 10,
 );
 
 sub request {
