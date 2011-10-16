@@ -3,7 +3,7 @@ name 'FCGI-Client';
 all_from 'lib/FCGI/Client.pm';
 
 requires 'IO::Socket::UNIX';
-requires 'Any::Moose' => 0.13;
+requires 'Any::Moose' => 0.17;
 
 author_requires 'FCGI';
 
