@@ -8,3 +8,16 @@ MANIFEST
 Makefile.old
 nytprof.out
 *.sw[po]
+inc/
+ppport.h
+*.bak
+*.old
+Build
+_build/
+xshelper.h
+tags
+blib/
+MYMETA.*
+META.json
+README
+FCGI-Client-*/

@@ -1,4 +1,6 @@
 package FCGI::Client::Connection;
+use strict;
+use warnings;
 use Any::Moose;
 use FCGI::Client::Constant;
 use Time::HiRes qw(time);

@@ -1,4 +1,6 @@
 package FCGI::Client::RecordHeader;
+use strict;
+use warnings;
 use Any::Moose;
 use FCGI::Client::Constant;
 has raw        => ( is => 'ro', isa => 'Str' );

@@ -1,4 +1,6 @@
 package FCGI::Client::Record;
+use strict;
+use warnings;
 use Any::Moose;
 use FCGI::Client::Constant;
 use FCGI::Client::RecordHeader;
