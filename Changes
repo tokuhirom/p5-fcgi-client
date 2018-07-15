@@ -1,5 +1,7 @@
 Revision history for Perl extension FCGI::Client
 
+{{$NEXT}}
+
 0.08
 
     - fixed default timeout was 10secs.

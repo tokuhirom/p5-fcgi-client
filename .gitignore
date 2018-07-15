@@ -18,6 +18,14 @@ xshelper.h
 tags
 blib/
 MYMETA.*
-META.json
 README
 FCGI-Client-*/
+/fcgi-client-*
+/.build
+/_build_params
+/Build
+/Build.bat
+!Build/
+!META.json
+!LICENSE
+/FCGI-Client-*
