@@ -1,4 +1,5 @@
 #!/usr/bin/ruby
+#invalid multibyte char (US-ASCII)
 load 't/fcgi/fcgi.rb'
 
 FCGI.each {|f|
