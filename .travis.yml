@@ -1,0 +1,8 @@
+nguage: perl
+sudo: false
+perl:
+  - "5.26"
+  - "5.10"
+  - "5.8"
+script:
+  - prove -lr t xt
