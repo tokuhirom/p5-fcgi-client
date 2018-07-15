@@ -6,3 +6,5 @@ perl:
   - "5.8"
 script:
   - prove -lr t xt
+install:
+  - cpanm --quiet --installdeps --with-develop --notest .

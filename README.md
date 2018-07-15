@@ -1,24 +1,8 @@
-package FCGI::Client;
-use warnings;
-use strict;
-use 5.008001;
-
-our $VERSION = '0.08';
-
-use Carp;
-
-use FCGI::Client::Connection;
-use FCGI::Client::Record;
-use FCGI::Client::RecordFactory;
-
-1;
-__END__
-
-=head1 NAME
+# NAME
 
 FCGI::Client - client library for fastcgi protocol
 
-=head1 SYNOPSIS
+# SYNOPSIS
 
     use FCGI::Client;
 
@@ -35,25 +19,23 @@ FCGI::Client - client library for fastcgi protocol
         ''
     );
 
-=head1 DESCRIPTION
+# DESCRIPTION
 
 FCGI::Client is client library for fastcgi protocol.
 
-=head1 AUTHOR
+# AUTHOR
 
-Tokuhiro Matsuno E<lt>tokuhirom @*(#RJKLFHFSDLJF gmail.comE<gt>
+Tokuhiro Matsuno &lt;tokuhirom @\*(#RJKLFHFSDLJF gmail.com>
 
-=head1 THANKS TO
+# THANKS TO
 
 peterkeen
 
-=head1 SEE ALSO
+# SEE ALSO
 
-L<FCGI>, L<http://www.fastcgi.com/drupal/node/6?q=node/22>
+[FCGI](https://metacpan.org/pod/FCGI), [http://www.fastcgi.com/drupal/node/6?q=node/22](http://www.fastcgi.com/drupal/node/6?q=node/22)
 
-=head1 LICENSE
+# LICENSE
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
-
-=cut
