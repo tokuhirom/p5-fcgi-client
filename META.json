@@ -4,13 +4,13 @@
       "Tokuhiro Matsuno <tokuhirom @*(#RJKLFHFSDLJF gmail.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.1.2, CPAN::Meta::Converter version 2.150001",
+   "generated_by" : "Minilla/v3.1.2, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
-      "version" : "2"
+      "version" : 2
    },
    "name" : "FCGI-Client",
    "no_index" : {
@@ -71,5 +71,6 @@
       "Peter Keen <peter.keen@bugsplat.info>",
       "Tokuhiro Matsuno <tokuhirom@gmail.com>"
    ],
+   "x_serialization_backend" : "JSON::PP version 2.97001",
    "x_static_install" : 1
 }
