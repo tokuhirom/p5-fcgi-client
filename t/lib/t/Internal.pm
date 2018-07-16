@@ -1,5 +1,4 @@
 package t::Internal;
-use Any::Moose;
 use FCGI::Client::Constant;
 use File::Temp ();
 use autodie;
@@ -9,17 +8,20 @@ use FCGI::Client::RecordFactory;
 use FCGI::Client::Record;
 use FCGI::Client::Connection;
 use Time::HiRes 'sleep';
+use Types::Standard qw/Str Int/;
 
-has path   => ( is => 'ro', isa     => 'Str' );
+use Moo;
+
+has path   => ( is => 'ro', isa     => Str );
 has sock_path => (
     is      => 'ro',
-    isa     => 'Str',
+    isa     => Str,
     lazy    => 1,
     default => sub { File::Temp::tmpnam() },
 );
 has child_pid => (
     is      => 'rw',
-    isa     => 'Int',
+    isa     => Int,
     lazy    => 1,
     default => sub {
         my $self = shift;
@@ -39,6 +41,8 @@ has child_pid => (
         }
     }
 );
+
+no Moo;
 
 sub DEMOLISH {
     my $self = shift;

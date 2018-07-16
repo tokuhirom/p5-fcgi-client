@@ -1,6 +1,7 @@
-requires 'Any::Moose', '0.17';
+requires 'Moo', '2';
 requires 'IO::Socket::UNIX';
 requires 'perl', '5.008001';
+requires 'Type::Tiny';
 
 on build => sub {
     requires 'Test::More';

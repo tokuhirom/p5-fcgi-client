@@ -1,13 +1,16 @@
 package FCGI::Client::Connection;
 use strict;
 use warnings;
-use Any::Moose;
 use FCGI::Client::Constant;
 use Time::HiRes qw(time);
 use List::Util qw(max);
 use POSIX qw(EAGAIN);
 use FCGI::Client::Record;
 use FCGI::Client::RecordFactory;
+
+use Types::Standard qw/Int/;
+
+use Moo;
 
 has sock => (
     is       => 'ro',
@@ -16,9 +19,11 @@ has sock => (
 
 has timeout => (
     is => 'rw',
-    isa => 'Int',
+    isa => Int,
     default => 10,
 );
+
+no Moo;
 
 sub request {
     my ($self, $env, $content) = @_;
