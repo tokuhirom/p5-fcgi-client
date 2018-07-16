@@ -1,9 +1,12 @@
 package FCGI::Client::RecordHeader;
 use strict;
 use warnings;
-use Any::Moose;
 use FCGI::Client::Constant;
-has raw        => ( is => 'ro', isa => 'Str' );
+use Types::Standard qw/Str/;
+
+use Moo;
+has raw        => ( is => 'ro', isa => Str );
+no Moo;
 
 sub content_length { unpack( 'x4n', $_[0]->raw ) }
 sub padding_length { unpack( 'x6C', $_[0]->raw ) }
